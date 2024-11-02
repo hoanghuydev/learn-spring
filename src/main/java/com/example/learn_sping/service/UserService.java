@@ -16,12 +16,23 @@ public class UserService {
     private UserMapper userMapper;
 
 
-    public User save(User user) {
-        return userRepository.save(user);
+    public UserDTO save(UserDTO userData) {
+        if (userData == null) {
+            throw new IllegalArgumentException("User data cannot be null");
+        }
+        User user = userMapper.toEntity(userData);
+        if (userRepository.existsByUsername(user.getUsername())) {
+            throw new IllegalArgumentException("Username already exists");
+        }
+        if (user.getUsername() == null || user.getEmail() == null || user.getPassword() == null) {
+            throw new IllegalArgumentException("Username, email, and password must not be null");
+        }
+        User savedUser = userRepository.save(user);
+        return userMapper.toDTO(savedUser);
     }
 
     public UserDTO getUserById(Long id) {
-        User user = userRepository.findById(id).orElseThrow(() -> new RuntimeException("Not found user"));
+        User user = userRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("Not found user"));
         return userMapper.toDTO(user);
     }
 }

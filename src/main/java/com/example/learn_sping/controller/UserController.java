@@ -19,6 +19,7 @@ public class UserController {
     @GetMapping("/{id}")
     public ResponseEntity<UserDTO> getUser(@PathVariable long id) {
         UserDTO user = userService.getUserById(id);
+        user.setPassword(null);
         return ResponseEntity.ok(user);
     }
 }
